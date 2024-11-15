@@ -31,6 +31,15 @@ double* priceCheckArr = new double[checkSize];
 double* totalPriceCheckArr = new double[checkSize];
 std::string* nameCheckArr = new std::string[checkSize];
 
+// Касса
+double cash = 15000;
+double webMoney = 0;
+
+
+
+
+
+
 
 //
 template<typename ArrType>
@@ -63,8 +72,8 @@ void ChangeProductName();
 void DeleteProduct();
 
 void Selling();
-
-
+void AddCheckItem();
+void PrintCheck();
 
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -239,7 +248,7 @@ void ShopAdminMenu()
 
 		if (choose == "1")
 		{
-
+			Selling();
 		}
 		else if (choose == "2")
 		{
@@ -300,7 +309,7 @@ void CreateStaticStorage()
 
 	int countStaticArr[staticSize]{ 35,3,4,8,5,2,10,10,5,5 };
 
-	double priceStaticArr[staticSize]{ 15000.0, 140000.0, 96000.0, 20000.0, 51000.0, 120000.0, 2300.0, 11000.0, 88000.0, 52000.0 };
+	double priceStaticArr[staticSize]{ 150.0, 140.0, 960.0, 200.0, 510.0, 1200.0, 2300.0, 110.0, 880.0, 520.0 };
 
 
 	SetArr(idStaticArr, idArr, staticSize);
@@ -988,10 +997,19 @@ void ChangeStorage()
 // Продажа
 void Selling()
 {
-	std::string chooseID, chooseCount;
+	std::string chooseID, chooseCount, choosePay;
 	int id{}, count{};
+	bool isFirst = true;
+
+	double totalSum = 0;
 
 	checkSize = 1;
+
+	delete[]priceCheckArr;
+	delete[]totalPriceCheckArr;
+	delete[]countCheckArr;
+	delete[]nameCheckArr;
+
 	countCheckArr = new int[checkSize];
 	priceCheckArr = new double[checkSize];
 	totalPriceCheckArr = new double[checkSize];
@@ -1004,7 +1022,7 @@ void Selling()
 		std::cout << "Введите ID товара или 0 для завершения: ";
 		std::getline(std::cin, chooseID, '\n');
 
-		if (IsNumber(chooseID))
+		if (!IsNumber(chooseID))
 		{
 			std::cout << "\n\nНекорректный ввод\n\n";
 			continue;
@@ -1015,8 +1033,41 @@ void Selling()
 
 			if (id == 0)
 			{
-				//!!!!
-				break;
+				if (!isFirst)
+				{
+					PrintCheck();
+					while (true)
+					{
+						std::cout << "Введите способ оплаты\n1 - Наличные\n2 - Карта\nВвод: ";
+						std::getline(std::cin, choosePay, '\n');
+						if (!IsNumber(choosePay))
+						{
+							std::cout << "\n\nНекоректный ввод\n\n";
+						}
+						else
+						{
+							if (std::stoi(choosePay) == 1)
+							{
+
+							}
+							else if (std::stoi(choosePay) == 2)
+							{
+
+							}
+							else
+							{
+								std::cout << "\n\nНекоректный ввод\n\n";
+							}
+						}
+					}
+
+					break;
+				}
+				else
+				{
+					break;
+				}
+
 			}
 			else if (id > 0 && id <= size)
 			{
@@ -1037,16 +1088,24 @@ void Selling()
 						{
 							std::cout << std::left << std::setw(30) << nameArr[id - 1]
 								<< " " << count << " добавлен в чек\n\n";
-
-							countCheckArr[checkSize - 1] = count;
-							priceCheckArr[checkSize - 1] = priceArr[id - 1];
-							totalPriceCheckArr[checkSize - 1] = priceArr[id - 1] * count;
-							nameCheckArr[checkSize - 1] = nameArr[id - 1];
-
-
-
-
-
+							if (isFirst)
+							{
+								countCheckArr[checkSize - 1] = count;
+								priceCheckArr[checkSize - 1] = priceArr[id - 1];
+								totalPriceCheckArr[checkSize - 1] = priceArr[id - 1] * count;
+								nameCheckArr[checkSize - 1] = nameArr[id - 1];
+								countArr[id - 1] -= count;
+								isFirst = false;
+							}
+							else
+							{
+								AddCheckItem();
+								countCheckArr[checkSize - 1] = count;
+								priceCheckArr[checkSize - 1] = priceArr[id - 1];
+								totalPriceCheckArr[checkSize - 1] = priceArr[id - 1] * count;
+								nameCheckArr[checkSize - 1] = nameArr[id - 1];
+								countArr[id - 1] -= count;
+							}
 
 							break;
 						}
@@ -1073,10 +1132,59 @@ void Selling()
 
 }
 
+// Чек
+void AddCheckItem()
+{
+	
+	int* tempCountCheck = new int[checkSize];
+	double* tempPriceCheck = new double[checkSize];
+	double* tempTotalPriceCheck = new double[checkSize];
+	std::string* tempNameCheck = new std::string[checkSize];
 
+	for (int i = 0; i < checkSize; i++)
+	{
+		tempCountCheck[i] = countCheckArr[i];
+		tempPriceCheck[i] = priceCheckArr[i];
+		tempTotalPriceCheck[i] = totalPriceCheckArr[i];
+		tempNameCheck[i] = nameCheckArr[i];
+	}
 
+	delete[]priceCheckArr;
+	delete[]totalPriceCheckArr;
+	delete[]countCheckArr;
+	delete[]nameCheckArr;
 
+	checkSize++;
 
+	countCheckArr = new int[checkSize];
+	priceCheckArr = new double[checkSize];
+	totalPriceCheckArr = new double[checkSize];
+	nameCheckArr = new std::string[checkSize];
+
+	for (int i = 0; i < checkSize - 1; i++)
+	{
+		countCheckArr[i] = tempCountCheck[i];
+		priceCheckArr[i] = tempPriceCheck[i];
+		totalPriceCheckArr[i] = tempTotalPriceCheck[i];
+		nameCheckArr[i] = tempNameCheck[i];
+	}
+
+	delete[]tempCountCheck;
+	delete[]tempPriceCheck;
+	delete[]tempTotalPriceCheck;
+	delete[]tempNameCheck;
+}
+
+// Печатный чек
+void PrintCheck()
+{
+	std::cout << "№\tНазвание\t\t\t\tЦена за ед\tкол - во\tИтого\n\n";
+	for (int i = 0; i < checkSize; i++)
+	{
+		std::cout << i + 1 << "\t" << std::left << std::setw(30) << nameCheckArr[i] << "\t"
+			<< priceCheckArr[i] << "\t\t" << countCheckArr[i] << "\t\t" << totalPriceCheckArr[i] << "\n";
+	}
+}
 
 
 
