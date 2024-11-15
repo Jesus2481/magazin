@@ -83,6 +83,10 @@ int main()
 	delete[]countArr;
 	delete[]priceArr;
 	delete[]nameArr;
+	delete[]priceCheckArr;
+	delete[]totalPriceCheckArr;
+	delete[]countCheckArr;
+	delete[]nameCheckArr;
 	return 0;
 }
 //--------------------------
@@ -984,8 +988,87 @@ void ChangeStorage()
 // Продажа
 void Selling()
 {
+	std::string chooseID, chooseCount;
+	int id{}, count{};
+
+	checkSize = 1;
+	countCheckArr = new int[checkSize];
+	priceCheckArr = new double[checkSize];
+	totalPriceCheckArr = new double[checkSize];
+	nameCheckArr = new std::string[checkSize];
+
+	while (true)
+	{
+		system("cls");
+		ShowStorage();
+		std::cout << "Введите ID товара или 0 для завершения: ";
+		std::getline(std::cin, chooseID, '\n');
+
+		if (IsNumber(chooseID))
+		{
+			std::cout << "\n\nНекорректный ввод\n\n";
+			continue;
+		}
+		else
+		{
+			id = std::stoi(chooseID);
+
+			if (id == 0)
+			{
+				//!!!!
+				break;
+			}
+			else if (id > 0 && id <= size)
+			{
+
+				while (true)
+				{
+					std::cout << "Введите кол-во " << nameArr[id - 1] << ": ";
+					std::getline(std::cin, chooseCount, '\n');
+					if (!IsNumber(chooseCount))
+					{
+						std::cout << "\n\nНекоректный ввод\n\n";
+						continue;
+					}
+					else
+					{
+						count = std::stoi(chooseCount);
+						if (count > 0 && count <= countArr[id - 1])
+						{
+							std::cout << std::left << std::setw(30) << nameArr[id - 1]
+								<< " " << count << " добавлен в чек\n\n";
+
+							countCheckArr[checkSize - 1] = count;
+							priceCheckArr[checkSize - 1] = priceArr[id - 1];
+							totalPriceCheckArr[checkSize - 1] = priceArr[id - 1] * count;
+							nameCheckArr[checkSize - 1] = nameArr[id - 1];
 
 
+
+
+
+
+							break;
+						}
+						else
+						{
+							std::cout << "\n\nНекорректное кол-во\n\n";
+						}
+
+
+					}
+
+
+				}
+
+
+			}
+
+
+		}
+
+
+	}
 
 
 }
