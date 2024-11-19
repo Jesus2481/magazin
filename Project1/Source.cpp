@@ -31,14 +31,11 @@ double* priceCheckArr = new double[checkSize];
 double* totalPriceCheckArr = new double[checkSize];
 std::string* nameCheckArr = new std::string[checkSize];
 
+
 // Касса
 double cash = 15000;
 double webMoney = 0;
-
-
-
-
-
+double cashMoney = 0;
 
 
 //
@@ -74,12 +71,11 @@ void DeleteProduct();
 void Selling();
 void AddCheckItem();
 void PrintCheck();
-
+void IncomeStatement();
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void CreateDynamicStorage();
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
 
 //--------------------------
@@ -194,26 +190,51 @@ void ShopUserMenu()
 
 		if (choose == "1")
 		{
-
+			Selling();
 		}
 		else if (choose == "2")
 		{
-
+			ShowStorage();
 		}
 		else if (choose == "3")
 		{
-
+			RefilStorage();
 		}
 		else if (choose == "4")
 		{
-
+			WriteOffFromStorage();
 		}
 		else if (choose == "5")
 		{
-
+			IncomeStatement();
 		}
 		else if (choose == "0")
 		{
+			system("cls");
+			while (true)
+			{
+				std::cout << "Закрыть смену?\n1 - Да\n2 - Отмена\nВвод: ";
+				std::getline(std::cin, choose, '\n');
+				if (!IsNumber(choose))
+				{
+					std::cout << "\n\nНекоректный ввод\n\n";
+				}
+				else if (IsNumber(choose))
+				{
+					break;
+				}
+			}
+
+			if (std::stoi(choose) == 1)
+			{
+				IncomeStatement();
+				std::cout << "\n\nСмена закрыта! Хорошго дня!\n";
+				break;
+			}
+			else
+			{
+				std::cout << "Отмена закрытия смены\n";
+			}
 			break;
 		}
 		else
@@ -280,11 +301,35 @@ void ShopAdminMenu()
 		}
 		else if (choose == "8")
 		{
-
+			IncomeStatement();
 		}
 		else if (choose == "0")
 		{
-			break;
+			system("cls");
+			while (true)
+			{
+				std::cout << "Закрыть смену?\n1 - Да\n2 - Отмена\nВвод: ";
+				std::getline(std::cin, choose, '\n');
+				if (!IsNumber(choose))
+				{
+					std::cout << "\n\nНекоректный ввод\n\n";
+				}
+				else if (IsNumber(choose))
+				{
+					break;
+				}
+			}
+			
+			if (std::stoi(choose) == 1)
+			{
+				IncomeStatement();
+				std::cout << "\n\nСмена закрыта! Хорошго дня!\n";
+				break;
+			}
+			else
+			{
+				std::cout << "Отмена закрытия смены\n";
+			}
 		}
 		else
 		{
@@ -997,7 +1042,7 @@ void ChangeStorage()
 // Продажа
 void Selling()
 {
-	std::string chooseID, chooseCount, choosePay;
+	std::string chooseID, chooseCount, choosePay, userCash;
 	int id{}, count{};
 	bool isFirst = true;
 
@@ -1038,6 +1083,7 @@ void Selling()
 					PrintCheck();
 					while (true)
 					{
+						std::cout << "Итоговая цена: " << totalSum << "\n";
 						std::cout << "Введите способ оплаты\n1 - Наличные\n2 - Карта\nВвод: ";
 						std::getline(std::cin, choosePay, '\n');
 						if (!IsNumber(choosePay))
@@ -1048,11 +1094,40 @@ void Selling()
 						{
 							if (std::stoi(choosePay) == 1)
 							{
-
+								while (true)
+								{
+									std::cout << "Введите сумму наличных: ";
+									std::getline(std::cin, userCash, '\n');
+									if (!IsNumber(userCash))
+									{
+										std::cout << "\n\nНекоректный ввод\n\n";
+									}
+									else
+									{
+										if (std::stod(userCash) < totalSum)
+										{
+											std::cout << "Недостаточно средств\n";
+										}
+										else if (cash >= std::stod(userCash) - totalSum)
+										{
+											std::cout << "Ваши: " << std::stod(userCash) << "\n\nОплата прошла успешно. Сдача: "
+												<< std::stod(userCash) - totalSum << " Руб\n\n";
+											cashMoney += std::stod(userCash);
+											cash += std::stod(userCash);
+											cash -= std::stod(userCash) - totalSum;
+											break;
+										}
+									}
+								}
+								break;
 							}
 							else if (std::stoi(choosePay) == 2)
 							{
 
+								std::cout << "\n\nОплата прошла успешно\n\n";
+								webMoney += totalSum;
+
+								break;
 							}
 							else
 							{
@@ -1060,7 +1135,6 @@ void Selling()
 							}
 						}
 					}
-
 					break;
 				}
 				else
@@ -1095,6 +1169,7 @@ void Selling()
 								totalPriceCheckArr[checkSize - 1] = priceArr[id - 1] * count;
 								nameCheckArr[checkSize - 1] = nameArr[id - 1];
 								countArr[id - 1] -= count;
+								totalSum += priceArr[id - 1] * count;
 								isFirst = false;
 							}
 							else
@@ -1104,6 +1179,7 @@ void Selling()
 								priceCheckArr[checkSize - 1] = priceArr[id - 1];
 								totalPriceCheckArr[checkSize - 1] = priceArr[id - 1] * count;
 								nameCheckArr[checkSize - 1] = nameArr[id - 1];
+								totalSum += priceArr[id - 1] * count;
 								countArr[id - 1] -= count;
 							}
 
@@ -1113,23 +1189,11 @@ void Selling()
 						{
 							std::cout << "\n\nНекорректное кол-во\n\n";
 						}
-
-
 					}
-
-
 				}
-
-
 			}
-
-
 		}
-
-
 	}
-
-
 }
 
 // Чек
@@ -1186,11 +1250,16 @@ void PrintCheck()
 	}
 }
 
+// Красивый чек
+void IncomeStatement()
+{
+	std::cout << "\t\tОтчет о прибыли\n\n";
+	std::cout << "Прибыль за наличный рассчёт:\t\t" << cashMoney << "\n";
+	std::cout << "Прибыль за безналичный рассчёт:\t\t" << webMoney << "\n";
+	std::cout << "Наличные в кассе :\t\t\t" << cash << "\n\n";
 
-
-
-
-
+	std::cout << "Итоговая выручка:\t\t\t" << cashMoney + webMoney << "\n";
+}
 
 bool IsNumber(std::string string)
 {
